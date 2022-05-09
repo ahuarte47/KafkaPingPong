@@ -84,7 +84,7 @@ services:
 # =============================================================================
 
   producer:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-producer
     depends_on:
       - zookeeper
@@ -97,7 +97,7 @@ services:
     network_mode: "host"
 
   validator:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-validator
     depends_on:
       - producer
@@ -109,7 +109,7 @@ services:
     network_mode: "host"
 
   reader:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-reader
     depends_on:
       - producer
