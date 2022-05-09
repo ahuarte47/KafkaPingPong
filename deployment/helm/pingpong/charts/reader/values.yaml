@@ -1,0 +1,91 @@
+# =============================================================================
+# Settings of the Reader component for Kubernetes.
+#
+# @Author:
+#  XYZ <xyz@mycompany.com>
+#
+# =============================================================================
+
+replicaCount: 1
+
+image:
+  repository: docker.io/pingpong/dummyapp
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.0.0"
+  # Environment variables for the Docker image.
+  env:
+    - name: BOOTSTRAP_SERVER
+      value: ""
+    - name: SERVICE_ROLE
+      value: "producer"
+    - name: SERVICE_IMPL
+      value: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "kfpingpong-reader"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 0
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  # Management Liveness probe
+  # https://github.com/hazelcast/charts/blob/master/stable/hazelcast/values.yaml
+  # enabled is a flag to enable liveness probe
+  enabled: false
+
+readinessProbe:
+  # Management Readiness probe
+  # https://github.com/hazelcast/charts/blob/master/stable/hazelcast/values.yaml
+  # enabled is a flag to enable readiness probe
+  enabled: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
