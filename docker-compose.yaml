@@ -87,7 +87,6 @@ services:
     build: .
     container_name: pingpong-producer
     depends_on:
-      - zookeeper
       - broker
     environment:
       BOOTSTRAP_SERVER: localhost:9092
