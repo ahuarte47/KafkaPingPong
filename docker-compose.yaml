@@ -84,7 +84,7 @@ services:
 # =============================================================================
 
   producer:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-producer
     depends_on:
       - zookeeper
@@ -93,30 +93,35 @@ services:
       BOOTSTRAP_SERVER: localhost:9092
       SERVICE_ROLE: producer
       SERVICE_IMPL: kafka
+      KAFKA_INPUT_TOPIC: dev.pingpong.requested
     restart: always
     network_mode: "host"
 
   validator:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-validator
     depends_on:
-      - producer
+      - broker
     environment:
       BOOTSTRAP_SERVER: localhost:9092
       SERVICE_ROLE: validator
       SERVICE_IMPL: kafka
+      KAFKA_INPUT_TOPIC: dev.pingpong.requested
+      KAFKA_OK_TOPIC: dev.pingpong.succeeded
+      KAFKA_FAIL_TOPIC: dev.pingpong.failed
     restart: always
     network_mode: "host"
 
   reader:
-    image: pingpong/dummyapp:1.0.0
+    build: .
     container_name: pingpong-reader
     depends_on:
-      - producer
-      - validator
+      - broker
     environment:
       BOOTSTRAP_SERVER: localhost:9092
       SERVICE_ROLE: reader
       SERVICE_IMPL: kafka
+      KAFKA_OK_TOPIC: dev.pingpong.succeeded
+      KAFKA_FAIL_TOPIC: dev.pingpong.failed
     restart: always
     network_mode: "host"

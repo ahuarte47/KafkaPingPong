@@ -149,6 +149,11 @@ def run_service(command_args: list) -> None:
     service_role = os.environ.get('SERVICE_ROLE', 'producer')
     service_impl = os.environ.get('SERVICE_IMPL', 'kafka')
     bootstrap_server = os.environ.get('BOOTSTRAP_SERVER', 'localhost:9092')
+
+    kafka_input_topic = os.environ.get('KAFKA_INPUT_TOPIC', 'pingpong.requested')
+    kafka_ok_topic = os.environ.get('KAFKA_OK_TOPIC', 'pingpong.ok')
+    kafka_fail_topic = os.environ.get('KAFKA_FAIL_TOPIC', 'pingpong.failed')
+
     schema_def = Item.schema()
 
     # Define the command parameters of the application.
@@ -211,7 +216,7 @@ def run_service(command_args: list) -> None:
 
                     key_id = 'ID' + str(item_count)
                     item['transaction-id'] = key_id
-                    producer.send(topic='dev.pingpong.requested', key=key_id, value=item)
+                    producer.send(topic=kafka_input_topic, key=key_id, value=item)
 
                     msg += '\n> ok!'
                     logging.info(msg)
@@ -227,7 +232,7 @@ def run_service(command_args: list) -> None:
             while consumer is None or producer is None:
                 consumer = create_consumer(service_impl=service_impl,
                                            bootstrap_servers=[bootstrap_server],
-                                           topics=['dev.pingpong.requested'],
+                                           topics=[kafka_input_topic],
                                            schema=schema_def)
                 producer = create_producer(service_impl=service_impl,
                                            bootstrap_servers=[bootstrap_server],
@@ -249,17 +254,17 @@ def run_service(command_args: list) -> None:
                         item.get('payload')['message'] = 'pong'
 
                         msg +=\
-                            '\n> The Item matches the Schema, sending message to the topic "dev.pingpong.succeeded"...'
+                            f'\n> The Item matches the Schema, sending message to the topic "{kafka_ok_topic}"...'
 
-                        producer.send(topic='dev.pingpong.succeeded', key=item['transaction-id'], value=item)
+                        producer.send(topic=kafka_ok_topic, key=item['transaction-id'], value=item)
                     else:
                         error_message = '\n'.join([e.message for e in validator_obj.iter_errors(instance=item)])
                         item.get('payload')['message'] = 'Validation Error: ' + error_message
 
                         msg +=\
-                            '\n> The Item does not the Schema, sending message to the topic "dev.pingpong.failed"...'
+                            f'\n> The Item does not the Schema, sending message to the topic "{kafka_fail_topic}"...'
 
-                        producer.send(topic='dev.pingpong.failed', key=item['transaction-id'], value=item)
+                        producer.send(topic=kafka_fail_topic, key=item['transaction-id'], value=item)
 
                     msg += '\n> ok!'
                     logging.info(msg)
@@ -274,7 +279,7 @@ def run_service(command_args: list) -> None:
             while consumer is None:
                 consumer = create_consumer(service_impl=service_impl,
                                            bootstrap_servers=[bootstrap_server],
-                                           topics=['dev.pingpong.succeeded', 'dev.pingpong.failed'],
+                                           topics=[kafka_ok_topic, kafka_fail_topic],
                                            schema=schema_def)
                 if consumer is None:
                     sleep(10)
