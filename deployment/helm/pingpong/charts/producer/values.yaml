@@ -21,6 +21,8 @@ image:
       value: "producer"
     - name: SERVICE_IMPL
       value: ""
+    - name: KAFKA_INPUT_TOPIC
+      value: ""
 
 imagePullSecrets: []
 nameOverride: ""

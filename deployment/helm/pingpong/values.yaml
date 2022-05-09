@@ -24,6 +24,8 @@ producer:
       value: "producer"
     - name: SERVICE_IMPL
       value: "kafka"
+    - name: KAFKA_INPUT_TOPIC
+      value: "dev.pingpong.requested"
 
   service:
     type: ClusterIP
@@ -42,6 +44,12 @@ validator:
       value: "validator"
     - name: SERVICE_IMPL
       value: "kafka"
+    - name: KAFKA_INPUT_TOPIC
+      value: "dev.pingpong.requested"
+    - name: KAFKA_OK_TOPIC
+      value: "dev.pingpong.succeeded"
+    - name: KAFKA_FAIL_TOPIC
+      value: "dev.pingpong.failed"
 
   service:
     type: ClusterIP
@@ -60,6 +68,10 @@ reader:
       value: "reader"
     - name: SERVICE_IMPL
       value: "kafka"
+    - name: KAFKA_OK_TOPIC
+      value: "dev.pingpong.succeeded"
+    - name: KAFKA_FAIL_TOPIC
+      value: "dev.pingpong.failed"
 
   service:
     type: ClusterIP
