@@ -1,0 +1,9 @@
+# This file specifies requirements of a reproducible environment to run the PingPong service.
+argparse
+jsonschema
+
+# Include some redundant Kafka libraries to test different options.
+kafka-python
+confluent_kafka[avro]
+faust
+fastavro

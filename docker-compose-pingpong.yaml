@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  producer:
+    image: pingpong/dummyapp:1.0.0
+    container_name: pingpong-producer
+    environment:
+      BOOTSTRAP_SERVER: localhost:9092
+      SERVICE_ROLE: producer
+      SERVICE_IMPL: kafka
+    restart: always
+    network_mode: "host"
+
+  validator:
+    image: pingpong/dummyapp:1.0.0
+    container_name: pingpong-validator
+    depends_on:
+      - producer
+    environment:
+      BOOTSTRAP_SERVER: localhost:9092
+      SERVICE_ROLE: validator
+      SERVICE_IMPL: kafka
+    restart: always
+    network_mode: "host"
+
+  reader:
+    image: pingpong/dummyapp:1.0.0
+    container_name: pingpong-reader
+    depends_on:
+      - producer
+      - validator
+    environment:
+      BOOTSTRAP_SERVER: localhost:9092
+      SERVICE_ROLE: reader
+      SERVICE_IMPL: kafka
+    restart: always
+    network_mode: "host"
