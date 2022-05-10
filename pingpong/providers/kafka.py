@@ -35,8 +35,10 @@ import json
 from kafka import KafkaProducer as k_KafkaProducer, KafkaConsumer as k_KafkaConsumer
 from kafka.admin import KafkaAdminClient, NewTopic
 
+from pingpong.interfaces import AbstractProducer, AbstractConsumer
 
-class KafkaProducer(object):
+
+class KafkaProducer(AbstractProducer):
     """
     Kafka Producer using https://kafka-python.readthedocs.io/ with JSON serialization.
     """
@@ -44,8 +46,9 @@ class KafkaProducer(object):
         """
         Create the Producer instance.
         """
-        self.bootstrap_servers = bootstrap_servers
-        self.schema = schema
+        super(KafkaProducer, self).__init__(
+            bootstrap_servers=bootstrap_servers, schema=schema
+        )
         self.producer = k_KafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=lambda x: json.dumps(x).encode('utf-8')
@@ -59,7 +62,7 @@ class KafkaProducer(object):
         self.producer.flush()
 
 
-class KafkaConsumer(object):
+class KafkaConsumer(AbstractConsumer):
     """
     Kafka Consumer using https://kafka-python.readthedocs.io/ with JSON deserialization.
     """
@@ -67,8 +70,9 @@ class KafkaConsumer(object):
         """
         Create the Consumer instance.
         """
-        self.bootstrap_servers = bootstrap_servers
-        self.schema = schema
+        super(KafkaConsumer, self).__init__(
+            bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema
+        )
         self.consumer = k_KafkaConsumer(
             *topics,
             bootstrap_servers=bootstrap_servers,
@@ -90,7 +94,8 @@ class KafkaConsumer(object):
                 t = NewTopic(name=topic, num_partitions=num_partitions, replication_factor=replication_factor)
                 admin_client.create_topics(new_topics=[t], validate_only=False)
                 topic_list.append(t)
-            except:  # Ignore error when the Topic already exists.
+            # Ignore the error when the Topic already exists.
+            except:
                 pass
 
         return topic_list

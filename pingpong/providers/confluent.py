@@ -36,6 +36,8 @@ import logging
 from confluent_kafka import Producer, Consumer
 from confluent_kafka.admin import AdminClient, NewTopic
 
+from pingpong.interfaces import AbstractProducer, AbstractConsumer
+
 
 def delivery_report(error, message):
     """
@@ -48,7 +50,7 @@ def delivery_report(error, message):
         logging.info('> Message delivered to {} [{}]'.format(message.topic(), message.partition()))
 
 
-class ConfluentProducer(object):
+class ConfluentProducer(AbstractProducer):
     """
     Kafka Producer using https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html
     with JSON serialization.
@@ -57,11 +59,12 @@ class ConfluentProducer(object):
         """
         Create the Producer instance.
         """
+        super(ConfluentProducer, self).__init__(
+            bootstrap_servers=bootstrap_servers, schema=schema
+        )
         config = {
             'bootstrap.servers': bootstrap_servers
         }
-        self.bootstrap_servers = bootstrap_servers
-        self.schema = schema
         self.producer = Producer(config)
 
     def send(self, topic: str, key: str, value: dict) -> None:
@@ -74,7 +77,7 @@ class ConfluentProducer(object):
         self.producer.flush()
 
 
-class ConfluentConsumer(object):
+class ConfluentConsumer(AbstractConsumer):
     """
     Kafka Consumer using https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html
     with JSON deserialization
@@ -83,13 +86,14 @@ class ConfluentConsumer(object):
         """
         Create the Consumer instance.
         """
+        super(ConfluentConsumer, self).__init__(
+            bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema
+        )
         config = {
             'bootstrap.servers': bootstrap_servers,
             'group.id': group_id,
             'auto.offset.reset': 'earliest'
         }
-        self.bootstrap_servers = bootstrap_servers
-        self.schema = schema
         self.consumer = Consumer(config)
         self.consumer.subscribe(topics)
 
@@ -109,7 +113,8 @@ class ConfluentConsumer(object):
                 t = NewTopic(name=topic, num_partitions=num_partitions, replication_factor=replication_factor)
                 admin_client.create_topics(new_topics=[t])
                 topic_list.append(t)
-            except:  # Ignore error when the Topic already exists.
+            # Ignore the error when the Topic already exists.
+            except:
                 pass
 
         return topic_list

@@ -31,7 +31,6 @@
 ===============================================================================
 """
 
-import sys
 import os
 import logging
 import argparse
@@ -41,8 +40,12 @@ import uuid
 from time import sleep
 from datetime import datetime
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
 from jsonschema import Draft7Validator as SchemaValidator
-from item import Item
+from pingpong.item import Item
+from pingpong.interfaces import AbstractConsumer, AbstractProducer
 
 
 # =============================================================================
@@ -58,33 +61,35 @@ from item import Item
 #     https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_6_stream_processing/streams/stream.py
 #
 #  The loading of a specific implementation is done reading the input parameter
-#  "service_impl" and importing their python modules by-hand.
-#  But if we have to implement readers or writers of many data providers,
+#  "service_impl" and importing their python module by-hand.
 #  The loading of these py files could be done using "importlib.import_module"
-#  depending on the name of the provider, instead of using hard-coding.
+#  depending on the name of the provider configured, instead of using hard-coding.
 
-def create_consumer(service_impl: str, bootstrap_servers: list, topics: list, schema: dict):
+def create_consumer(service_impl: str, bootstrap_servers: list, topics: list, schema: dict) -> AbstractConsumer:
     """
     Returns a new Kafka Consumer of the specified implementation.
     """
     try:
         service_impl = service_impl.lower()
-        group_id = 'pingpong_' + uuid.uuid4().hex
+
+        group_id = 'pingpong-group-' + uuid.uuid4().hex
+        num_partitions = 2
+        replication_factor = 1
 
         if service_impl == 'kafka':
-            from providers.kafka import KafkaConsumer
+            from pingpong.providers.kafka import KafkaConsumer
             c = KafkaConsumer(bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema)
-            c.create_topics(topics=topics, num_partitions=2, replication_factor=1)
+            c.create_topics(topics=topics, num_partitions=num_partitions, replication_factor=replication_factor)
             return c
         if service_impl == 'confluent':
-            from providers.confluent import ConfluentConsumer
+            from pingpong.providers.confluent import ConfluentConsumer
             c = ConfluentConsumer(bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema)
-            c.create_topics(topics=topics, num_partitions=2, replication_factor=1)
+            c.create_topics(topics=topics, num_partitions=num_partitions, replication_factor=replication_factor)
             return c
         if service_impl == 'dummy':
-            from providers.dummy import DummyConsumer
-            c = DummyConsumer(bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema)
-            c.create_topics(topics=topics, num_partitions=2, replication_factor=1)
+            from pingpong.interfaces import AbstractConsumer
+            c = AbstractConsumer(bootstrap_servers=bootstrap_servers, group_id=group_id, topics=topics, schema=schema)
+            c.create_topics(topics=topics, num_partitions=num_partitions, replication_factor=replication_factor)
             return c
 
     except Exception as e:
@@ -95,7 +100,7 @@ def create_consumer(service_impl: str, bootstrap_servers: list, topics: list, sc
     raise Exception(f'The Kafka provider "{service_impl}" is not supported!')
 
 
-def create_producer(service_impl: str, bootstrap_servers: list, schema: dict):
+def create_producer(service_impl: str, bootstrap_servers: list, schema: dict) -> AbstractProducer:
     """
     Returns a new Kafka Producer of the specified implementation.
     """
@@ -103,16 +108,16 @@ def create_producer(service_impl: str, bootstrap_servers: list, schema: dict):
         service_impl = service_impl.lower()
 
         if service_impl == 'kafka':
-            from providers.kafka import KafkaProducer
+            from pingpong.providers.kafka import KafkaProducer
             p = KafkaProducer(bootstrap_servers=bootstrap_servers, schema=schema)
             return p
         if service_impl == 'confluent':
-            from providers.confluent import ConfluentProducer
+            from pingpong.providers.confluent import ConfluentProducer
             p = ConfluentProducer(bootstrap_servers=bootstrap_servers, schema=schema)
             return p
         if service_impl == 'dummy':
-            from providers.dummy import DummyProducer
-            p = DummyProducer(bootstrap_servers=bootstrap_servers, schema=schema)
+            from pingpong.interfaces import AbstractProducer
+            p = AbstractProducer(bootstrap_servers=bootstrap_servers, schema=schema)
             return p
 
     except Exception as e:
@@ -192,7 +197,7 @@ def run_service(command_args: list) -> None:
     # Run service...
     try:
         if service_role == 'producer':
-            producer = None
+            producer: AbstractProducer = None
             item_count = 0
 
             # Create Kafka Producer, waiting valid object.
@@ -225,8 +230,8 @@ def run_service(command_args: list) -> None:
 
         elif service_role == 'validator':
             validator_obj = SchemaValidator(schema_def)
-            consumer = None
-            producer = None
+            consumer: AbstractConsumer = None
+            producer: AbstractProducer = None
 
             # Create Kafka Producer & Consumer, waiting valid object.
             while consumer is None or producer is None:
@@ -273,7 +278,7 @@ def run_service(command_args: list) -> None:
 
         # Service working as final reader by default.
         else:
-            consumer = None
+            consumer: AbstractConsumer = None
 
             # Create Kafka Producer & Consumer, waiting valid object.
             while consumer is None:

@@ -32,15 +32,16 @@
 """
 
 
-class DummyProducer(object):
+class AbstractProducer(object):
     """
-    Kafka Producer doing nothing.
+    Abstract Kafka Producer doing nothing.
     """
     def __init__(self, bootstrap_servers: list, schema: dict) -> None:
         """
         Create the Producer instance.
         """
-        pass
+        self.bootstrap_servers = bootstrap_servers
+        self.schema = schema
 
     def send(self, topic: str, key: str, value: dict) -> None:
         """
@@ -49,15 +50,18 @@ class DummyProducer(object):
         pass
 
 
-class DummyConsumer(object):
+class AbstractConsumer(object):
     """
-    Kafka Consumer doing nothing.
+    Abstract Kafka Consumer doing nothing.
     """
     def __init__(self, bootstrap_servers: list, group_id: str, topics: list, schema: dict) -> None:
         """
         Create the Consumer instance.
         """
-        pass
+        self.bootstrap_servers = bootstrap_servers
+        self.group_id = group_id
+        self.topics = topics
+        self.schema = schema
 
     def create_topics(self, topics: list, num_partitions: int = 2, replication_factor: int = 1):
         """
