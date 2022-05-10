@@ -85,6 +85,7 @@ services:
 
   producer:
     build: .
+    image: pingpong/serviceapp:1.0.0
     container_name: pingpong-producer
     depends_on:
       - broker
@@ -98,6 +99,7 @@ services:
 
   validator:
     build: .
+    image: pingpong/serviceapp:1.0.0
     container_name: pingpong-validator
     depends_on:
       - broker
@@ -113,6 +115,7 @@ services:
 
   reader:
     build: .
+    image: pingpong/serviceapp:1.0.0
     container_name: pingpong-reader
     depends_on:
       - broker
