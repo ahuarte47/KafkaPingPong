@@ -15,7 +15,7 @@
 producer:
   replicaCount: 1
   image:
-    repository: docker.io/pingpong/dummyapp
+    repository: docker.io/pingpong/serviceapp
     tag: "1.0.0"
     env:
     - name: BOOTSTRAP_SERVER
@@ -35,7 +35,7 @@ producer:
 validator:
   replicaCount: 1
   image:
-    repository: docker.io/pingpong/dummyapp
+    repository: docker.io/pingpong/serviceapp
     tag: "1.0.0"
     env:
     - name: BOOTSTRAP_SERVER
@@ -59,7 +59,7 @@ validator:
 reader:
   replicaCount: 1
   image:
-    repository: docker.io/pingpong/dummyapp
+    repository: docker.io/pingpong/serviceapp
     tag: "1.0.0"
     env:
     - name: BOOTSTRAP_SERVER

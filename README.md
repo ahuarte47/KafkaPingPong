@@ -129,24 +129,24 @@ To test that everything is running in Kubernetes:
 > kubectl get all
 ```
 
-![Alt text](docs/images/results-k8s-01.png?raw=true "Kubectl get all")
+![Alt text](docs/images/results-k8s-get-all.png?raw=true "Kubectl get all")
 
 ```bash
 > kubectl logs kfpingpong-producer-xxx
 ```
 
-![Alt text](docs/images/results-k8s-02.png?raw=true "producer")
+![Alt text](docs/images/results-k8s-log-producer.png?raw=true "producer")
 
 ```bash
 > kubectl logs kfpingpong-validator-xxx
 ```
 
-![Alt text](docs/images/results-k8s-03.png?raw=true "validator")
+![Alt text](docs/images/results-k8s-log-validator.png?raw=true "validator")
 
 ```bash
 > kubectl logs kfpingpong-reader-xxx
 ```
 
-![Alt text](docs/images/results-k8s-04.png?raw=true "reader")
+![Alt text](docs/images/results-k8s-log-reader.png?raw=true "reader")
 
 Enjoy!
