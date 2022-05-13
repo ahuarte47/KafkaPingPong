@@ -30,7 +30,7 @@ Next guide shows how to deploy everything on a Kubernetes cluster or using Docke
 
   [Kubernetes](https://kubernetes.io/) is an open-source container orchestration platform designed to automate the deployment, scaling, and management of containerized applications. 
   
-  Don't you have a Kubernetes instance running, [Kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container “nodes”. Kind was primarily designed for testing Kubernetes itself, but may be used for local development. 
+  Don't you have a Kubernetes instance running?, [Kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container “nodes”. Kind was primarily designed for testing Kubernetes itself, but may be used for local development. 
 
   [Docker Compose](https://docs.docker.com/compose/) is a tool for running multi-container applications on [Docker]((https://www.docker.com/)) defined using the *Compose file format*. A Compose file is used to define how the one or more containers that make up your application are configured. Once you have a Compose file, you can create and start your application with a single command: `docker compose up`.
   
@@ -117,6 +117,18 @@ If you want to render templates before deploying the stack of pods and services,
 > helm install --name-template kfpingpong-platform --dry-run --debug ./pingpong
 ```
 
+For uninstalling the software:
+
+```bash
+> helm delete kfpingpong-platform
+```
+
+And to remove the Docker image from Kind:
+
+```bash
+> docker exec -it "kind-control-plane" crictl rmi docker.io/pingpong/serviceapp:1.0.0
+```
+
 And that's all!
 
 #### Deploying with Docker compose
@@ -127,6 +139,12 @@ Deploying PingPong Service with Docker compose is easy:
 
 ```bash
 > docker-compose -f docker-compose.yaml up
+```
+
+For uninstalling the software:
+
+```bash
+> docker-compose -f docker-compose.yaml down
 ```
 
 ### Results
