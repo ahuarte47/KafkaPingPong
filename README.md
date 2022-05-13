@@ -29,6 +29,8 @@ Next guide shows how to deploy everything on a Kubernetes cluster or using Docke
 - **Kubernetes** or **Docker compose**
 
   [Kubernetes](https://kubernetes.io/) is an open-source container orchestration platform designed to automate the deployment, scaling, and management of containerized applications. 
+  
+  Don't you have a Kubernetes instance running, [Kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container “nodes”. Kind was primarily designed for testing Kubernetes itself, but may be used for local development. 
 
   [Docker Compose](https://docs.docker.com/compose/) is a tool for running multi-container applications on [Docker]((https://www.docker.com/)) defined using the *Compose file format*. A Compose file is used to define how the one or more containers that make up your application are configured. Once you have a Compose file, you can create and start your application with a single command: `docker compose up`.
   
@@ -97,7 +99,13 @@ When you want to delete the image, run:
 [Helm](https://helm.sh/) is a tool for managing Kubernetes packages called Charts. This resource configures the Services, Pods, number of replicas. 
 As usual using Helm packages, the “values.yml” file of the project describes all settings of the deployment and a set of specific entries that configure the services using environment variables.
 
-Deploying PingPong Service with Helm on Kubernetes is easy:
+If you are using Kind, you can need before uploading the Docker image:
+
+```bash
+> kind load docker-image pingpong/serviceapp:1.0.0
+```
+
+Now, deploying PingPong Service with Helm on Kubernetes is easy, goto `deployment/Helm` subfolder and run:
 
 ```bash
 > helm install --name-template kfpingpong-platform ./pingpong
