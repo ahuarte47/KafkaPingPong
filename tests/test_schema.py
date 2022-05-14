@@ -62,6 +62,6 @@ class TestSchema(unittest.TestCase):
         for item in items:
             if not self._validator_obj.is_valid(instance=item):
                 error_message = '\n'.join([e.message for e in self._validator_obj.iter_errors(instance=item)])
-                print('Validation error: {}'.format(error_message))
+                print(f'Validation error: {error_message}')
 
             self.assertFalse(self._validator_obj.is_valid(instance=item))

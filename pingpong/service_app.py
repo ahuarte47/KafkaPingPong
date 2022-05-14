@@ -187,7 +187,8 @@ def run_service(command_args: list) -> None:
 
     # For debugging...
     logging.info('Environment variables:')
-    for k, v in sorted(os.environ.items()): logging.info(' + {}: {}'.format(k,v))
+    for k, v in sorted(os.environ.items()):
+        logging.info(f' + {k}: {v}')
 
     service_role = args.service_role.lower()
     service_impl = args.service_impl
@@ -217,7 +218,7 @@ def run_service(command_args: list) -> None:
             while True:
                 for item in items:
                     now_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    msg = 'Sending Item #{} ({})...'.format(item_count, now_time)
+                    msg = f'Sending Item #{item_count} ({now_time})...'
 
                     key_id = 'ID' + str(item_count)
                     item['transaction-id'] = key_id
@@ -252,7 +253,7 @@ def run_service(command_args: list) -> None:
                     item = message.value
 
                     now_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    msg = 'Validating Item from Topic "{}" ({})...'.format(message.topic, now_time)
+                    msg = f'Validating Item from Topic "{message.topic}" ({now_time})...'
                     msg += '\n> Item: ' + json.dumps(item)
 
                     if validator_obj.is_valid(instance=item):
@@ -295,7 +296,7 @@ def run_service(command_args: list) -> None:
                     item = message.value
 
                     now_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    msg = 'Digesting Item from Topic "{}" ({})...'.format(message.topic, now_time)
+                    msg = f'Digesting Item from Topic "{message.topic}" ({now_time})...'
                     msg += '\n> Item: ' + json.dumps(item)
                     msg += '\n> ok!'
                     logging.info(msg)

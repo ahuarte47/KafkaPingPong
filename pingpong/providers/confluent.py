@@ -45,9 +45,9 @@ def delivery_report(error, message):
     Triggered by poll() or flush().
     """
     if error is not None:
-        logging.error('> Message delivery failed: {}'.format(error))
+        logging.error(f'> Message delivery failed: {error}')
     else:
-        logging.info('> Message delivered to {} [{}]'.format(message.topic(), message.partition()))
+        logging.info(f'> Message delivered to {message.topic()} [{message.partition()}]')
 
 
 class ConfluentProducer(AbstractProducer):
@@ -128,7 +128,7 @@ class ConfluentConsumer(AbstractConsumer):
 
         if message is not None:
             if message.error():
-                logging.error('Consumer error: {}'.format(message.error()))
+                logging.error(f'Consumer error: {message.error()}')
             else:
                 results.append({
                     'topic': message.topic(),
