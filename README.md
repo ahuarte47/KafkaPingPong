@@ -175,4 +175,35 @@ To test that everything is running in Kubernetes:
 
 ![Alt text](docs/images/results-k8s-log-reader.png?raw=true "reader")
 
+You can disable the "producer" and send messages by yourself. Set "dummy" in its `SERVICE_IMPL` setting, this empty implementation really does nothing. 
+
+For sending a new input message, run from a kafla-client:
+
+```bash
+> cat message.json | jq
+{
+  "transaction-id": "ID01", 
+  "payload": {
+    "message": "ping"
+  }
+}
+
+> kafla-console-producer.sh \
+   --bootstrap-server localhost:9092 \
+   --topic dev.pingpong.requested < message.json
+```
+
 Enjoy!
+
+### Known issues / TODO
+
+* The services are not working when using the [confluent-kafka](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html) package. Producer and Consumer instances are not be able to connect with the brokers. 
+Further research is necessary what is happening.
+
+### Contribute
+Have you spotted a typo in our documentation? Have you observed a bug while running Ping-Pong Service? Do you have a suggestion for a new feature?
+
+Don't hesitate and open an issue or submit a pull request, contributions are most welcome!
+
+### License
+Ping-Pong Service is licensed under Apache License v2.0. See LICENSE file for details.
