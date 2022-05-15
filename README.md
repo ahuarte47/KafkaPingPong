@@ -198,7 +198,7 @@ Enjoy!
 ### Known issues / TODO
 
 * The services are not working when using the [confluent-kafka](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html) package. Producer and Consumer instances are not be able to connect with the brokers. 
-Further research is necessary what is happening.
+Further research is necessary to figure out what is happening.
 
 ### Contribute
 Have you spotted a typo in our documentation? Have you observed a bug while running Ping-Pong Service? Do you have a suggestion for a new feature?
